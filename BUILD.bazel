@@ -16,19 +16,22 @@ cc_library(
         "include/zm2.h",
         "include/bn.h",
         "include/cybozu/benchmark.hpp",
-        "include/cybozu/inttype.hpp"
-    ],
-    hdrs = [
-        "include/bn.h",
-        "include/cybozu/benchmark.hpp",
         "include/cybozu/inttype.hpp",
-        "include/zm.h",
-        "include/zm2.h"
+        "src/xbyak/xbyak.h",
+        "src/xbyak/xbyak_mnemonic.h",
+        "src/xbyak/xbyak_util.h"
     ],
+    # hdrs = [
+    #     "include/bn.h",
+    #     "include/cybozu/benchmark.hpp",
+    #     "include/cybozu/inttype.hpp",
+    #     "include/zm.h",
+    #     "include/zm2.h",
+    # ],
     copts = CFLAGS,
     # some client include directives use this prefix, e.g. #include "ate-pairing/include/bn.h"
     include_prefix = "ate-pairing",
-    includes = ["include"],
+    includes = ["include", "src"],
     defines = DEFINES + SNARK,
     local_defines = DDEBUG,
     linkopts = select({
@@ -36,8 +39,7 @@ cc_library(
         "//conditions:default": [],
     }),
     visibility = ["//visibility:public"],
-    deps =  ["@xbyak//xbyak"]
-    + select({
+    deps = select({
         "//:enable_libgmp": ["//bzl/external/libgmp"],
         "//conditions:default": []
     })

@@ -55,11 +55,3 @@ http_archive(
 #     strip_prefix = "swig-4.0.1",
 #     build_file_content = all_content
 # )
-
-################################################################
-http_archive(
-    name = "xbyak",
-    urls = ["https://github.com/obazl/xbyak/archive/bzl-1.0.tar.gz"],
-    strip_prefix = "xbyak-bzl-1.0",
-    sha256 = "84fc1e7a73ec9077b05516422775ac90086ef45976aaf43f65368529cb71a75d"
-)

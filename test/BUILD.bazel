@@ -78,13 +78,12 @@ cc_test(
 cc_test(
     name = "bench",
     srcs = ["bench.cpp"],
-    copts = CFLAGS + ["-Iexternal/xbyak"],
+    copts = CFLAGS,
     local_defines = DEFINES,
     linkstatic = LINK_STATIC_ONLY,
     visibility = ["//visibility:public"],
     deps = [
-        "//zm",
-        "@xbyak//xbyak",
+        "//zm"
     ],
 )
 
