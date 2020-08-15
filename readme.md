@@ -77,6 +77,13 @@ Requirements
 Build instructions
 -------------
 
+### Bazel
+
+```
+$ bazel build zm
+$ bazel test test/...
+```
+
 ### Windows
 
     > git clone git://github.com/herumi/xbyak.git
