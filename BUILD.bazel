@@ -4,30 +4,24 @@ load("@bazel_skylib//rules:common_settings.bzl",
 )
 load("@ate_pairing//bzl:vars.bzl", "CFLAGS", "DDEBUG", "DEFINES", "SNARK")
 
-# we put this here instead of in src because making distinct packages
-# for src and include would break clients like libff that namespace
-# includes, e.g. #include "ate-pairing/include/bn.h".
 cc_library(
     name = "zm",
     srcs = [
         "src/zm.cpp",
-        "include/zm.h",
         "src/zm2.cpp",
+        "include/zm.h",
         "include/zm2.h",
         "include/bn.h",
-        "include/cybozu/benchmark.hpp",
-        "include/cybozu/inttype.hpp",
         "src/xbyak/xbyak.h",
         "src/xbyak/xbyak_mnemonic.h",
         "src/xbyak/xbyak_util.h"
     ],
-    # hdrs = [
-    #     "include/bn.h",
-    #     "include/cybozu/benchmark.hpp",
-    #     "include/cybozu/inttype.hpp",
-    #     "include/zm.h",
-    #     "include/zm2.h",
-    # ],
+    hdrs = [
+        "include/bn.h",
+        "include/zm.h",
+        "include/zm2.h",
+        # "src/xbyak/xbyak_util.h"
+    ],
     copts = CFLAGS,
     # some client include directives use this prefix, e.g. #include "ate-pairing/include/bn.h"
     include_prefix = "ate-pairing",

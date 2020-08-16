@@ -27,7 +27,7 @@ cc_test(
     local_defines = DEFINES,
     linkstatic = LINK_STATIC_ONLY,
     visibility = ["//visibility:public"],
-    deps = ["//zm"]
+    deps = ["//zm", "//include/cybozu"]
 )
 
 cc_test(
@@ -37,7 +37,7 @@ cc_test(
     local_defines = DEFINES,
     linkstatic = LINK_STATIC_ONLY,
     visibility = ["//visibility:public"],
-    deps = ["//zm"],
+    deps = ["//zm", "//include/cybozu"],
 )
 
 cc_test(
