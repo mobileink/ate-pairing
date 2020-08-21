@@ -1,5 +1,5 @@
 load("@rules_cc//cc:defs.bzl", "cc_test")
-load("//bzl:vars.bzl", "CFLAGS", "DEFINES", "LINK_STATIC_ONLY")
+load("//bzl/config:vars.bzl", "CFLAGS", "DEFINES", "LINK_STATIC_ONLY")
 
 COMMON_SRCS = [
     "test_point.hpp",
@@ -20,6 +20,17 @@ test_suite(
     ]
 )
 
+test_suite(
+    name = "snark",
+    tests = [
+        ":zm",
+        ":bn",
+        ":sample",
+        ":loop",
+        ":bench",
+    ],
+)
+
 cc_test(
     name = "zm",
     srcs = ["test_zm.cpp"],
@@ -27,7 +38,7 @@ cc_test(
     local_defines = DEFINES,
     linkstatic = LINK_STATIC_ONLY,
     visibility = ["//visibility:public"],
-    deps = ["//zm"]
+    deps = ["//libzm"]
 )
 
 cc_test(
@@ -37,7 +48,7 @@ cc_test(
     local_defines = DEFINES,
     linkstatic = LINK_STATIC_ONLY,
     visibility = ["//visibility:public"],
-    deps = ["//zm"],
+    deps = ["//libzm"],
 )
 
 cc_test(
@@ -51,7 +62,7 @@ cc_test(
     visibility = ["//visibility:public"],
     # static build fails on undefined references
     # linkstatic = False,
-    deps = ["//zm"],
+    deps = ["//libzm"],
 )
 
 # cc_binary(
@@ -60,7 +71,7 @@ cc_test(
 #     srcs = glob(["java_api.cpp"]),
 #     copts = ["-Iinclude"],
 #     deps = ["@//java",
-#             "//zm"]
+#             "//libzm"]
 # )
 
 cc_test(
@@ -72,7 +83,7 @@ cc_test(
     local_defines = DEFINES,
     linkstatic = LINK_STATIC_ONLY,
     visibility = ["//visibility:public"],
-    deps = ["//zm"],
+    deps = ["//libzm"],
 )
 
 cc_test(
@@ -83,7 +94,7 @@ cc_test(
     linkstatic = LINK_STATIC_ONLY,
     visibility = ["//visibility:public"],
     deps = [
-        "//zm",
+        "//libzm",
         "@xbyak//xbyak",
     ],
 )
@@ -95,8 +106,13 @@ cc_test(
         "test_point.hpp",
     ],
     linkstatic = LINK_STATIC_ONLY,
-    copts = CFLAGS,
+    copts = CFLAGS
+    + select({
+        "//bzl/config:disable_snark" : [],
+    },
+              no_match_error = "config option --//:snark not supported by test:mini."
+                            ),
     local_defines = DEFINES,
     visibility = ["//visibility:public"],
-    deps = ["//zm"],
+    deps = ["//libzm"],
 )
