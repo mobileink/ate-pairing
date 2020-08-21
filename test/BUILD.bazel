@@ -38,7 +38,7 @@ cc_test(
     local_defines = DEFINES,
     linkstatic = LINK_STATIC_ONLY,
     visibility = ["//visibility:public"],
-    deps = ["//libzm"]
+    deps = ["//libzm", "//include/cybozu"]
 )
 
 cc_test(
@@ -48,7 +48,9 @@ cc_test(
     local_defines = DEFINES,
     linkstatic = LINK_STATIC_ONLY,
     visibility = ["//visibility:public"],
-    deps = ["//libzm"],
+    deps = ["//libzm",
+            "//include/cybozu"
+            ],
 )
 
 cc_test(
@@ -95,7 +97,7 @@ cc_test(
     visibility = ["//visibility:public"],
     deps = [
         "//libzm",
-        "@xbyak//xbyak",
+        "//include/cybozu"
     ],
 )
 
