@@ -1,5 +1,5 @@
 alias(
-    name = "zm",
+    name = "libzm",
     actual = "//:zm",
     visibility = ["//visibility:public"],
 )

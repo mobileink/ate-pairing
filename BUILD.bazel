@@ -2,8 +2,22 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 load("@bazel_skylib//rules:common_settings.bzl",
      "bool_flag", "int_flag", "string_flag"
 )
-load("@ate_pairing//bzl:vars.bzl", "CFLAGS", "DDEBUG", "DEFINES", "SNARK")
+load("@ate_pairing//bzl/config:vars.bzl", "CFLAGS", "DDEBUG", "DEFINES", "SNARK")
 
+################################################################
+    ######## Extramural (shared) Build Settings ########
+
+bool_flag( name = "snark", build_setting_default = False, visibility = ["//visibility:public"])
+# hack: to be overridden by upstream depender:
+config_setting( name = "enable_snark", flag_values = { ":snark": str(True) },
+                visibility = ["//visibility:public"])
+
+bool_flag( name = "with_libgmp", build_setting_default = True, visibility = ["//visibility:public"])
+
+################################################################
+# we put this here instead of in src because making distinct packages
+# for src and include would break clients like libff that namespace
+# includes, e.g. #include "ate-pairing/include/bn.h".
 cc_library(
     name = "zm",
     srcs = [
@@ -33,32 +47,9 @@ cc_library(
         "//conditions:default": [],
     }),
     visibility = ["//visibility:public"],
-    deps = select({
-        "//:enable_libgmp": ["//bzl/external/libgmp"],
+    deps =  ["@xbyak//xbyak"]
+    + select({
+        "//bzl/config:with_libgmp": ["//bzl/external/libgmp"],
         "//conditions:default": []
     })
 )
-
-#### Build Settings ####
-bool_flag( name = "debug",
-           build_setting_default = False)
-config_setting( name = "enable_debug",
-                flag_values = { ":debug": "true" })
-
-string_flag( name = "curve",
-             values = ["bn128", "alt_bn128", ""],
-             build_setting_default = "")
-config_setting( name = "curve_bn128",
-                flag_values = { ":curve": "bn128" })
-config_setting( name = "curve_alt_bn128",
-                flag_values = { ":curve": "alt_bn128" })
-
-bool_flag( name = "with_libgmp",
-             build_setting_default = True)
-config_setting( name = "enable_libgmp",
-                flag_values = { ":with_libgmp": str(True) })
-
-int_flag( name = "vuint_bit_len",
-          build_setting_default = 0)
-config_setting( name = "vuint_bit_len_1024",
-                flag_values = { ":vuint_bit_len": str(1024) })
