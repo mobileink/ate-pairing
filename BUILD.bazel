@@ -2,7 +2,8 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 load("@bazel_skylib//rules:common_settings.bzl",
      "bool_flag", "int_flag", "string_flag"
 )
-load("@ate_pairing//bzl/config:vars.bzl", "CFLAGS", "DDEBUG", "DEFINES", "SNARK")
+load("@ate_pairing//bzl/config:vars.bzl",
+     "CFLAGS", "DDEBUG", "DEFINES", "LINK_STATIC_ONLY", "SNARK")
 
 ################################################################
     ######## Extramural (shared) Build Settings ########
@@ -45,6 +46,7 @@ cc_library(
         "//bzl/host:macos": ["-Wl,-no_pie"],  # avoid PIE disabled warning
         "//conditions:default": [],
     }),
+    linkstatic = LINK_STATIC_ONLY,
     visibility = ["//visibility:public"],
     deps = select({
         "//bzl/config:with_libgmp": ["//bzl/external/libgmp"],

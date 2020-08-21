@@ -18,17 +18,15 @@ configure_make(
     # ],
     configure_options = select({
         "//bzl/host:linux_x64": [
-            # "--build=x86_64-apple-darwin",
-            # "--host=x86_64-unknown-linux-gnu",
-            "--enable-shared",
+            "--disable-shared",
             "--enable-static"
         ],
         "//bzl/host:macos": [
             "--build=x86_64-apple-darwin",
             "AR=\"\"",
             # "-Wl,-no_pie", # avoid PIE disabled warning
-            # "--enable-shared",
-            # "--enable-static",
+            "--enable-shared",
+            "--enable-static",
             "--with-pic",
             ## due to the -D stuff Bazel inserts, omission of -Dredacted results in:
             ## error: invalid suffix on literal; C++11 requires a space
@@ -43,17 +41,19 @@ configure_make(
     out_lib_dir = "lib",
     shared_libraries = select({
         "//bzl/host:macos": ["libgmp.dylib", "libgmpxx.dylib"],
-        "//bzl/host:linux_x64": ["libgmp.so.10.4.0", "libgmpxx.so.4.6.0"],
+        "//bzl/host:linux_x64": [], # "libgmp.so.10.4.0", "libgmpxx.so.4.6.0"],
         "//conditions:default": ["libgmp.so.10.4.0", "libgmpxx.so.4.6.0"],
     }),
-    static_libraries = select({
-        "//bzl/host:macos": [
-            ## IMPORTANT: order matters!  keep libgmpxx before libgmp or you will get undefined reference errors.
-            "libgmpxx.a",
-            "libgmp.a",
-        ],
-        "//bzl/host:linux_x64": ["libgmp.a", "libgmpxx.a"],
-        "//conditions:default": ["libgmpxx.a", "libgmp.a"],
-    }),
+    static_libraries = ["libgmpxx.a", "libgmp.a"],
+    # static_libraries = select({
+    #     "//bzl/host:macos": [
+    #         ## IMPORTANT: order matters!  keep libgmpxx before libgmp
+    #         ## or you will get undefined reference errors.
+    #         "libgmpxx.a",
+    #         "libgmp.a",
+    #     ],
+    #     "//bzl/host:linux_x64": ["libgmp.a", "libgmpxx.a"],
+    #     "//conditions:default": ["libgmpxx.a", "libgmp.a"],
+    # }),
     visibility = ["//visibility:public"],
 )
