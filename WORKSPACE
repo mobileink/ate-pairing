@@ -34,7 +34,7 @@ rules_foreign_cc_dependencies()
 ################################################################
 http_archive(
     name = "xbyak",
-    urls = ["https://github.com/obazl/xbyak/archive/bzl-1.0.tar.gz"],
+    urls = ["https://github.com/o1-labs/xbyak/archive/bzl-1.0.tar.gz"],
     strip_prefix = "xbyak-bzl-1.0",
     # sha256 =
 )
