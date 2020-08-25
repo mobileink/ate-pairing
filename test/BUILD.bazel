@@ -9,62 +9,100 @@ COMMON_SRCS = [
 ## in the same order as in the Makefile:
 
 test_suite(
-    name = "test",
+    name = "CurveNoSNARK",
     tests = [
-        ":zm",
-        ":bn",
-        ":sample",
-        ":loop",
-        ":bench",
-        ":mini"
+        ":zm-nosnark",
+        ":bn-nosnark",
+        ":sample-nosnark",
+        ":loop-nosnark",
+        ":bench-nosnark",
+        ":mini-nosnark"
     ]
 )
 
 test_suite(
-    name = "snark",
+    name = "CurveSNARK",
     tests = [
-        ":zm",
-        ":bn",
-        ":sample",
-        ":loop",
-        ":bench",
+        ":zm-snark",
+        ":bn-snark",
+        ":sample-snark",
+        ":loop-snark",
+        ":bench-snark",
     ],
 )
 
 cc_test(
-    name = "zm",
+    name = "zm-nosnark",
     srcs = ["test_zm.cpp"],
-    copts = CFLAGS,
+    copts = CFLAGS + ["-UBN_SUPPORT_SNARK"],
     local_defines = DEFINES,
     linkstatic = LINK_STATIC_ONLY,
     visibility = ["//visibility:public"],
-    deps = ["//libzm", "//include/cybozu"]
+    deps = ["//:_zm-nosnark", "//include/cybozu"]
 )
 
 cc_test(
-    name = "bn",
-    srcs = ["bn.cpp"] + COMMON_SRCS,
-    copts = CFLAGS,
+    name = "zm-snark",
+    srcs = ["test_zm.cpp"],
+    copts = CFLAGS + ["-IBN_SUPPORT_SNARK"],
     local_defines = DEFINES,
     linkstatic = LINK_STATIC_ONLY,
     visibility = ["//visibility:public"],
-    deps = ["//libzm",
+    deps = ["//:_zm-snark", "//include/cybozu"]
+)
+
+################
+cc_test(
+    name = "bn-nosnark",
+    srcs = ["bn.cpp"] + COMMON_SRCS,
+    copts = CFLAGS + ["-UBN_SUPPORT_SNARK"],
+    local_defines = DEFINES,
+    linkstatic = LINK_STATIC_ONLY,
+    visibility = ["//visibility:public"],
+    deps = ["//:_zm-nosnark",
             "//include/cybozu"
             ],
 )
 
 cc_test(
-    name = "sample",
+    name = "bn-snark",
+    srcs = ["bn.cpp"] + COMMON_SRCS,
+    copts = CFLAGS,
+    local_defines = DEFINES + ["BN_SUPPORT_SNARK"],
+    linkstatic = LINK_STATIC_ONLY,
+    visibility = ["//visibility:public"],
+    deps = ["//:_zm-snark",
+            "//include/cybozu"
+            ],
+)
+
+################
+cc_test(
+    name = "sample-nosnark",
     srcs = [
         "sample.cpp",
     ] + COMMON_SRCS,
-    copts = CFLAGS,
+    copts = CFLAGS + ["-UBN_SUPPORT_SNARK"],
     local_defines = DEFINES,
     linkstatic = LINK_STATIC_ONLY,
     visibility = ["//visibility:public"],
     # static build fails on undefined references
     # linkstatic = False,
-    deps = ["//libzm"],
+    deps = ["//:_zm-nosnark"],
+)
+
+cc_test(
+    name = "sample-snark",
+    srcs = [
+        "sample.cpp",
+    ] + COMMON_SRCS,
+    copts = CFLAGS,
+    local_defines = DEFINES + ["BN_SUPPORT_SNARK"],
+    linkstatic = LINK_STATIC_ONLY,
+    visibility = ["//visibility:public"],
+    # static build fails on undefined references
+    # linkstatic = False,
+    deps = ["//:_zm-snark"],
 )
 
 # cc_binary(
@@ -76,45 +114,69 @@ cc_test(
 #             "//libzm"]
 # )
 
+################
 cc_test(
-    name = "loop",
+    name = "loop-nosnark",
+    srcs = [
+        "loop_test.cpp",
+    ] + COMMON_SRCS,
+    copts = CFLAGS + ["-UBN_SUPPORT_SNARK"],
+    local_defines = DEFINES,
+    linkstatic = LINK_STATIC_ONLY,
+    visibility = ["//visibility:public"],
+    deps = ["//:_zm-nosnark"],
+)
+
+cc_test(
+    name = "loop-snark",
     srcs = [
         "loop_test.cpp",
     ] + COMMON_SRCS,
     copts = CFLAGS,
-    local_defines = DEFINES,
+    local_defines = DEFINES + ["BN_SUPPORT_SNARK"],
     linkstatic = LINK_STATIC_ONLY,
     visibility = ["//visibility:public"],
-    deps = ["//libzm"],
+    deps = ["//:_zm-snark"],
 )
 
+################
 cc_test(
-    name = "bench",
+    name = "bench-nosnark",
     srcs = ["bench.cpp"],
-    copts = CFLAGS + ["-Iexternal/xbyak"],
+    copts = CFLAGS + ["-UBN_SUPPORT_SNARK"] + ["-Iexternal/xbyak"],
     local_defines = DEFINES,
     linkstatic = LINK_STATIC_ONLY,
     visibility = ["//visibility:public"],
     deps = [
-        "//libzm",
+        "//:_zm-nosnark",
         "@xbyak//xbyak"
     ],
 )
 
 cc_test(
-    name = "mini",
+    name = "bench-snark",
+    srcs = ["bench.cpp"],
+    copts = CFLAGS + ["-Iexternal/xbyak"],
+    local_defines = DEFINES + ["BN_SUPPORT_SNARK"],
+    linkstatic = LINK_STATIC_ONLY,
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:_zm-snark",
+        "@xbyak//xbyak"
+    ],
+)
+
+################
+# non-snark only:
+cc_test(
+    name = "mini-nosnark",
     srcs = [
         "minitest.cpp",
         "test_point.hpp",
     ],
     linkstatic = LINK_STATIC_ONLY,
-    copts = CFLAGS
-    + select({
-        "//bzl/config:disable_snark" : [],
-    },
-              no_match_error = "config option --//:snark not supported by test:mini."
-                            ),
+    copts = CFLAGS + ["-UBN_SUPPORT_SNARK"],
     local_defines = DEFINES,
     visibility = ["//visibility:public"],
-    deps = ["//libzm"],
+    deps = ["//:_zm-nosnark"],
 )

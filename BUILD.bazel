@@ -37,7 +37,73 @@ cc_library(
     # some client include directives use this prefix, e.g. #include "ate-pairing/include/bn.h"
     include_prefix = "ate-pairing",
     includes = ["include", "src"],
-    defines = DEFINES + SNARK,
+    defines = DEFINES + ["BN_SUPPORT_SNARK"], # SNARK,
+    local_defines = DDEBUG,
+    linkopts = select({
+        "//bzl/host:macos": ["-Wl,-no_pie"],  # avoid PIE disabled warning
+        "//conditions:default": [],
+    }),
+    linkstatic = LINK_STATIC_ONLY,
+    visibility = ["//visibility:public"],
+    deps = ["@xbyak//xbyak"] + select({
+        "//bzl/config:with_libgmp": ["//bzl/external/libgmp"],
+        "//conditions:default": []
+    })
+)
+
+# these are for testing, with hard-coded snark param
+cc_library(
+    name = "_zm-snark",
+    srcs = [
+        "src/zm.cpp",
+        "src/zm2.cpp",
+        "include/zm.h",
+        "include/zm2.h",
+        "include/bn.h",
+    ],
+    hdrs = [
+        "include/bn.h",
+        "include/zm.h",
+        "include/zm2.h",
+    ],
+    copts = CFLAGS,
+    # some client include directives use this prefix, e.g. #include "ate-pairing/include/bn.h"
+    include_prefix = "ate-pairing",
+    includes = ["include", "src"],
+    defines = DEFINES,
+    local_defines = DDEBUG + ["BN_SUPPORT_SNARK"],
+    linkopts = select({
+        "//bzl/host:macos": ["-Wl,-no_pie"],  # avoid PIE disabled warning
+        "//conditions:default": [],
+    }),
+    linkstatic = LINK_STATIC_ONLY,
+    visibility = ["//visibility:public"],
+    deps = ["@xbyak//xbyak"] + select({
+        "//bzl/config:with_libgmp": ["//bzl/external/libgmp"],
+        "//conditions:default": []
+    })
+)
+
+# for testing - test:mini
+cc_library(
+    name = "_zm-nosnark",
+    srcs = [
+        "src/zm.cpp",
+        "src/zm2.cpp",
+        "include/zm.h",
+        "include/zm2.h",
+        "include/bn.h",
+    ],
+    hdrs = [
+        "include/bn.h",
+        "include/zm.h",
+        "include/zm2.h",
+    ],
+    copts = CFLAGS + ["-UBN_SUPPORT_SNARK"],
+    # some client include directives use this prefix, e.g. #include "ate-pairing/include/bn.h"
+    include_prefix = "ate-pairing",
+    includes = ["include", "src"],
+    defines = DEFINES,
     local_defines = DDEBUG,
     linkopts = select({
         "//bzl/host:macos": ["-Wl,-no_pie"],  # avoid PIE disabled warning
