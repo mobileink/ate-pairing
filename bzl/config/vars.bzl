@@ -57,7 +57,6 @@ DDEBUG = select({
 
 SNARK = select({
     "@//:enable_snark" : ["BN_SUPPORT_SNARK=1"],
-    "//bzl/config:enable_snark" : ["BN_SUPPORT_SNARK=1"],
     "//conditions:default": []
 })
 
