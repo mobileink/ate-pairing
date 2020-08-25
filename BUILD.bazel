@@ -9,7 +9,7 @@ load("@ate_pairing//bzl/config:vars.bzl",
     ######## Extramural (shared) Build Settings ########
 
 bool_flag( name = "snark", build_setting_default = False, visibility = ["//visibility:public"])
-# hack: to be overridden by upstream depender:
+# override xbyak default:
 config_setting( name = "enable_snark", flag_values = { ":snark": str(True) },
                 visibility = ["//visibility:public"])
 
